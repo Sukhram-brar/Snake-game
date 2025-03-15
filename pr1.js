@@ -1,4 +1,4 @@
-var canvas=document.getElementById("gamecanvas");
+var canvas=document.getElementById("gameCanvas");
 var ctx=canvas.getContext("2d");
 
 //intial size of snake and food
@@ -50,6 +50,9 @@ function displayscore(){
 
 //displaying the message of game over with the score along with msg of how to restart game
 function gameover(){
+    //adding the blur in the background
+    ctx.fillStyle="rgba(0, 0, 0, 0.646)";
+    ctx.fillRect(0,0,canvas.width,canvas.height);
     ctx.font = "30px Arial";
     //using the red color for game over making it highlight for the user
     ctx.fillStyle="red";
@@ -76,8 +79,7 @@ function restart(event) {
 }
 
 // drawing the game
-function main()
-{
+function main() {
     if(over)
         return;
 
@@ -86,24 +88,119 @@ function main()
     ctx.fillRect(0,0,canvas.width,canvas.height);
 
     //making the food appear in the canvas
+    ctx.fillStyle="red";
+    ctx.beginPath();
+    ctx.arc(food.x + box / 2, food.y + box / 2, box / 2, 0, 2 * Math.PI);
+    ctx.fill();
     ctx.fillStyle="green";
-    ctx.fillRect(food.x,food.y,box,box);
+    ctx.beginPath();
+    ctx.arc(food.x + box / 1.4, food.y + box / 3, box / 2, 4, 2 * Math.PI);
+    ctx.fill();
+    ctx.fillStyle="#f04646";
+    ctx.beginPath();
+    ctx.arc(food.x + box / 3, food.y + box / 3, box / 4, 2, 2 * Math.PI);
+    ctx.fill();
 
-    //making the snake
-    for(let i=0;i<snake.length;i++){
-        if (i === 0) {
+
+    function drawSnake() {
+        for (let i = 0; i < snake.length; i++) {
+            if (i === 0) {
             // Draw the snake head
             ctx.beginPath();
             ctx.fillStyle="yellow";
             ctx.arc(snake[i].x + box / 2, snake[i].y + box / 2, box / 2, 0, 2 * Math.PI); 
             ctx.fill();
-        }
-        else{
-            //rest body of the snake
-            ctx.fillStyle="orange";
-             ctx.fillRect(snake[i].x,snake[i].y,box,box);
+            ctx.strokeStyle = "orange";
+            ctx.stroke();
+            
+            // Draw the eyes
+            ctx.fillStyle="gray";
+            if (direction === "left" || direction === "right") {
+                ctx.beginPath();
+                ctx.arc(snake[i].x + box / 4, snake[i].y + box / 3.5, box / 6, 0, 2 * Math.PI);
+                ctx.fill();
+                ctx.beginPath();
+                ctx.arc(snake[i].x + (3 * box) / 4, snake[i].y + box / 3.5, box / 6, 0, 2 * Math.PI);
+                ctx.fill();
+            } else if (direction === "up" || direction === "down") {
+                ctx.beginPath();
+                ctx.arc(snake[i].x + box / 3.5, snake[i].y + box / 4, box / 6, 0, 2 * Math.PI);
+                ctx.fill();
+                ctx.beginPath();
+                ctx.arc(snake[i].x + box / 3.5, snake[i].y + (3 * box) / 4, box / 6, 0, 2 * Math.PI);
+                ctx.fill();
+            }
+           // Draw pupils
+           ctx.fillStyle = "black";
+            if (direction === "left") {
+                ctx.beginPath();
+                ctx.arc(snake[i].x + box / 4 - box / 16, snake[i].y + box / 3.5, box / 16, 0, 2 * Math.PI);
+                ctx.fill();
+                ctx.beginPath();
+                ctx.arc(snake[i].x + (3 * box) / 4 - box / 16, snake[i].y + box / 3.5, box / 16, 0, 2 * Math.PI);
+                ctx.fill();
+            } else if (direction === "right") {
+                ctx.beginPath();
+                ctx.arc(snake[i].x + box / 4 + box / 16, snake[i].y + box / 3.5, box / 16, 0, 2 * Math.PI);
+                ctx.fill();
+                ctx.beginPath();
+                ctx.arc(snake[i].x + (3 * box) / 4 + box / 16, snake[i].y + box / 3.5, box / 16, 0, 2 * Math.PI);
+                ctx.fill();
+            } else if (direction === "up") {
+                ctx.beginPath();
+                ctx.arc(snake[i].x + box / 3.5, snake[i].y + box / 4 - box / 16, box / 16, 0, 2 * Math.PI);
+                ctx.fill();
+                ctx.beginPath();
+                ctx.arc(snake[i].x + box / 3.5, snake[i].y + (3 * box) / 4 - box / 16, box / 16, 0, 2 * Math.PI);
+                ctx.fill();
+            } else if (direction === "down") {
+                ctx.beginPath();
+                ctx.arc(snake[i].x + box / 3.5, snake[i].y + box / 4 + box / 16, box / 16, 0, 2 * Math.PI);
+                ctx.fill();
+                ctx.beginPath();
+                ctx.arc(snake[i].x + box / 3.5, snake[i].y + (3 * box) / 4 + box / 16, box / 16, 0, 2 * Math.PI);
+                ctx.fill();
+            }
+            // Draw the tongue
+            ctx.strokeStyle = "red";
+            ctx.beginPath();
+            if (direction === "left") {
+                ctx.moveTo(snake[i].x, snake[i].y + box / 2);
+                ctx.lineTo(snake[i].x - box / 2, snake[i].y + box / 2);
+            } else if (direction === "right") {
+                ctx.moveTo(snake[i].x + box, snake[i].y + box / 2);
+                ctx.lineTo(snake[i].x + box + box / 2, snake[i].y + box / 2);
+            } else if (direction === "up") {
+                ctx.moveTo(snake[i].x + box / 2, snake[i].y);
+                ctx.lineTo(snake[i].x + box / 2, snake[i].y - box / 2);
+            } else if (direction === "down") {
+                ctx.moveTo(snake[i].x + box / 2, snake[i].y + box);
+                ctx.lineTo(snake[i].x + box / 2, snake[i].y + box + box / 2);
+            }
+            ctx.stroke();
+        } else if (i === snake.length - 1) {
+            // Draw the tail with a rounded end
+            ctx.fillStyle = "yellow";
+            ctx.beginPath();
+            ctx.arc(snake[i].x + box / 2, snake[i].y + box / 2, box / 3, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.strokeStyle = "orange";
+            ctx.stroke();
+        } else {
+            // Draw the body
+            ctx.fillStyle = "yellow";
+            ctx.beginPath();
+            ctx.arc(snake[i].x + box / 2, snake[i].y + box / 2, box / 2, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.strokeStyle = "orange";
+            ctx.stroke();
+
+            }
+
         }
     }
+    
+    drawSnake();
 
     //finding the head postion
     let newX=snake[0].x;
@@ -119,7 +216,6 @@ function main()
         newY-=box;
     if(direction==="down")
         newY+=box;
-    
 
     //checking if the snake eats food
     if(newX===food.x && newY=== food.y){
@@ -133,9 +229,10 @@ function main()
             interval=setInterval(main,speed);
 
         }
-    }
-    else 
+    //do not remove the last part of the snake
+    } else {
          snake.pop();
+    }
 
     //tracking the snake head
     let newhead={
@@ -143,11 +240,16 @@ function main()
         y:newY
     };
 
-    //checkking if the snake head collaspe
-    if (snake.some(pos => pos.x === newhead.x && pos.y === newhead.y)) {
+    //adding the new head to the snake
+    snake.unshift(newhead);
+
+    //checkking if the snake head collides with the body
+    for (let i = 1; i < snake.length; i++) {    
+        if (snake[i].x === newhead.x && snake[i].y === newhead.y) {
         over = true;
         gameover();
         return;
+        }
     }
 
     //checking if the snake hit the wall
@@ -156,8 +258,7 @@ function main()
         gameover();
         return;
     }
-    //adding the new head infront of the snake on eating the food
-    snake = [newhead].concat(snake);
+
     //calling the displayscore to display the score    
     displayscore();
 }
